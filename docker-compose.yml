@@ -13,9 +13,19 @@ services:
       - timescaledb_data:/var/lib/postgresql/data
     networks:
       - nenjo-network
+  cache:
+    image: redis:8.4.1-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - cache:/data
 
 volumes:
   timescaledb_data:
+  cache:
+    driver: local
 
 networks:
   nenjo-network:
