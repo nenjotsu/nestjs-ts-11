@@ -2,9 +2,9 @@
   "name": "nestjs-ts-11",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "nenjotech",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT License",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
