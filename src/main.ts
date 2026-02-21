@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import compression from '@fastify/compress';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -41,6 +42,19 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new LoggingInterceptor(), new ResponseInterceptor());
 
-  await app.listen(port);
+   const swaggerConfig = new DocumentBuilder()
+    .setTitle('Advanced NestJS API')
+    .setDescription('Demonstrating advanced NestJS patterns')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, document);
+
+  // Listen on all interfaces (required for containers)
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Application running on: http://localhost:${port}`);
+  console.log(`📚 Swagger docs: http://localhost:${port}/api/docs`);
+
 }
 bootstrap();
