@@ -5,18 +5,6 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 
-console.log({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432', 10),
-      username: process.env.TIMESCALEDB_USER,
-      password: process.env.TIMESCALEDB_PASSWORD,
-      database: process.env.TIMESCALEDB_DB,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-    });
-
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,4 +26,17 @@ console.log({
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    // console.log({
+    //   type: 'postgres',
+    //   host: process.env.DB_HOST || 'localhost',
+    //   port: parseInt(process.env.DB_PORT || '5432', 10),
+    //   username: process.env.TIMESCALEDB_USER,
+    //   password: process.env.TIMESCALEDB_PASSWORD,
+    //   database: process.env.TIMESCALEDB_DB,
+    //   entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    //   synchronize: true,
+    // });
+  }
+}
