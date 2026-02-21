@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CqrsModule } from '@nestjs/cqrs';
+import { Keyv } from 'keyv';
+import KeyvRedis from '@keyv/redis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './config/database.module';
 
 
 @Module({
@@ -12,7 +17,22 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: ['.env.local','.env'],
     }),
-    TypeOrmModule.forRoot({
+    CacheModule.registerAsync({
+      isGlobal: true,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        stores: [
+          new Keyv({
+            store: new KeyvRedis(
+              `redis://:${config.get('REDIS_PASSWORD', '')}@${config.get('REDIS_HOST', 'localhost')}:${config.get('REDIS_PORT', 6379)}`
+            ),
+            ttl: config.get<number>('CACHE_TTL', 60) * 1000,
+            namespace: 'myapp', // optional key prefix
+          }),
+        ],
+      }),
+    }),
+    DatabaseModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432', 10),
@@ -20,8 +40,12 @@ import { ConfigModule } from '@nestjs/config';
       password: process.env.TIMESCALEDB_PASSWORD,
       database: process.env.TIMESCALEDB_DB,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      autoLoadEntities: true,
       synchronize: true,
     }),
+
+    CqrsModule,
+
     UserModule,
   ],
   controllers: [AppController],
