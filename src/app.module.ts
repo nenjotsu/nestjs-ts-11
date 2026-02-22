@@ -7,7 +7,6 @@ import { Keyv } from 'keyv';
 import KeyvRedis from '@keyv/redis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
 import { DatabaseModule } from './config/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -49,8 +48,6 @@ import { OrdersModule } from './orders/orders.module';
     }),
 
     CqrsModule,
-
-    UserModule,
 
     UsersModule,
 
