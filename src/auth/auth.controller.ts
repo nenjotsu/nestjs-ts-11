@@ -1,17 +1,23 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { Public } from 'src/common/decorators';
 import { RefreshDto } from './dto/refresh.dto';
 import { AuthGuard } from './auth.guard';
+import { CreateUserDto } from 'src/users/dto/user.dto';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('Auth')
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly usersService: UsersService) {}
+
+  @Post('register')
+  @Public()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
+  }
 
   @Post('login')
   @Public()
