@@ -2,7 +2,7 @@ import { Controller, Get, Body, Patch, Param, Delete, NotFoundException, UseGuar
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { AuthGuard } from '../common/guards/auth.guard';
 
 
 @ApiTags('Users')
