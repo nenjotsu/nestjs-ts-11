@@ -1,34 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
+import { Public } from 'src/common/decorators';
+import { RefreshDto } from './dto/refresh.dto';
+import { AuthGuard } from './auth.guard';
 
-@Controller('auth')
+@ApiTags('Auth')
+@Controller({ path: 'auth', version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @Post('login')
+  @Public()
+  @ApiOperation({ summary: 'User login' })
+  login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto.email, loginDto.password);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Post('refresh')
+  @Public()
+  @ApiOperation({ summary: 'Refresh token' })
+  refresh(@Body() refreshDto: RefreshDto) {
+    return this.authService.refreshToken(refreshDto.refreshToken);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  @ApiOperation({ summary: 'Protected route example' })
+  getProtected() {
+    return { message: 'This is a protected route' };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
-  }
 }

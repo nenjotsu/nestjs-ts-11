@@ -20,6 +20,7 @@ import type { Cache } from 'cache-manager';
 import { REQUEST } from '@nestjs/core';
 import type { FastifyRequest } from 'fastify';
 import * as bcrypt from 'bcrypt';
+import * as argon2 from 'argon2';
 import { UserEntity } from './entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 
@@ -63,7 +64,8 @@ export class UsersService {
       throw new ConflictException(`Email ${dto.email} is already registered`);
     }
 
-    const hashed = await bcrypt.hash(dto.password, 12);
+    // const hashed = await bcrypt.hash(dto.password, 12);
+    const hashed = await argon2.hash(dto.password);
     const user = this.usersRepo.create({ ...dto, password: hashed });
     const saved = await this.usersRepo.save(user);
 
@@ -121,6 +123,12 @@ export class UsersService {
     await this.cache.del(`${this.CACHE_PREFIX}${id}`);
     await this.cache.del('users:list');
     return updated;
+  }
+
+  async updateRefreshToken(id: string, refreshToken: string): Promise<void> {
+    const user = await this.findOne(id);
+    user.refreshToken = refreshToken;
+    await this.usersRepo.save(user);
   }
 
   async remove(id: string): Promise<void> {
