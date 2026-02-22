@@ -1,9 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { UserEntity } from './entities/user.entity';
-import { mock } from 'node:test';
 import { JwtService } from '@nestjs/jwt';
 
 describe('UsersController', () => {
@@ -22,7 +19,6 @@ describe('UsersController', () => {
   beforeEach(async () => {
     jest.resetAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-
       controllers: [UsersController],
       providers: [{
         provide: UsersService, useValue: mockUserService
