@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { UserEntity } from './entities/user.entity';
-import { mock } from 'node:test';
+import { JwtService } from '@nestjs/jwt';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -23,7 +21,8 @@ describe('UsersController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [{
-        provide: UsersService, useValue: mockUserService}],
+        provide: UsersService, useValue: mockUserService
+      }, JwtService],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
@@ -49,7 +48,6 @@ describe('UsersController', () => {
       });
 
       it('should return a user with correct params', async () => {
-        const user = { id: 1, name: 'John Doe', email: 'hVY4W@example.com' };
         const result = await controller.findOne(userId);
         expect(result).toEqual(mockResult);
       });
